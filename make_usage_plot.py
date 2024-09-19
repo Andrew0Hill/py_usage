@@ -63,19 +63,19 @@ def plot_stat(ax: plt.Axes, job_stats: pd.DataFrame, stat: str):
         n_log_cpu = job_stats['n_log_cpu'].iloc[0]
         n_avail_cpu = job_stats["n_avail_cpu"].iloc[0]
 
-        label_str = f"CPU Usage %\n({n_phys_cpu} Physical CPUs, {n_log_cpu} Logical CPUs, {n_avail_cpu} Available CPUs)"
+        label_str = f"CPU Usage (%)\n({n_phys_cpu} Physical CPUs, {n_log_cpu} Logical CPUs, {n_avail_cpu} Available CPUs)"
         ax.set_xlabel(label_str)
-        ax.plot(job_stats["cpu_pct"], job_stats["datetime"], label=label_str, color=Dark2(0))
+        ax.plot(job_stats["cpu_pct"], job_stats["datetime"], label="CPU Usage (%)", color=Dark2(0))
         ax.set_xlim(0, 100)
         ax.xaxis.set_major_locator(FixedLocator([0, 25, 50, 75, 100]))
         ax.xaxis.set_minor_locator(AutoMinorLocator(5))
         if n_avail_cpu != n_log_cpu:
-            ax.axvline(n_avail_cpu*100, label="Avail. CPU Usage Boundary")
-            ax.legend(fancybox=False, color="black", loc="upper right")
+            ax.axvline(n_avail_cpu/n_log_cpu*100, label="Avail. CPU Usage Boundary", color=Dark2(7), linestyle="--")
+            ax.legend(fancybox=False, edgecolor="black", loc="upper right")
     elif stat == "mem":
-        label_str = f"Memory Usage %\n({memory_str(job_stats['total'].iloc[0])} Total RAM)"
+        label_str = f"Memory Usage (%)\n({memory_str(job_stats['total'].iloc[0])} Total RAM)"
         ax.set_xlabel(label_str)
-        ax.plot(job_stats["percent"], job_stats["datetime"], label=label_str, color=Dark2(1))
+        ax.plot(job_stats["percent"], job_stats["datetime"], label="Memory Usage (%)", color=Dark2(1))
         ax.set_xlim(0, 100)
         ax.xaxis.set_major_locator(FixedLocator([0, 25, 50, 75, 100]))
         ax.xaxis.set_minor_locator(AutoMinorLocator(5))
@@ -115,8 +115,8 @@ def make_plot(job_stats: pd.DataFrame, output_file: str, stats: list, job_marker
         # Plot markers
         if job_markers is not None:
             for i, (lbl, lbl_time) in enumerate(job_markers.items()):
-                ax_i.axhline(lbl_time, color="black", linestyle="--")
-                ax_i.text(ax_i.get_xlim()[-1], lbl_time, lbl,  ha="right", va="bottom" if i % 2 == 1 else "top")
+                ax_i.axhline(lbl_time, color="black")
+                ax_i.text(ax_i.get_xlim()[-1], lbl_time, lbl,  ha="right", va="bottom" if i % 2 == 0 else "top")
 
     # Y-axis is shared among all axes, so we set the defaults here.
     ax[0].yaxis.set_major_formatter(DateFormatter("%m/%d %H:%M:%S"))
